@@ -7,7 +7,7 @@ import sys
 import logging
 import json
 
-class adnyFilter(BaseFilter):
+class IncDecFilter(BaseFilter):
     def filter(self, message):
         return ('--' in message.text or '++' in message.text)
 
@@ -57,7 +57,7 @@ def update_score(bot, update):
             db[username] += 1
             mentioned_users.add(username)
 
-    with open('adny-bot-db.json', 'w') as dbfile:
+    with open('incdec-bot-db.json', 'w') as dbfile:
         json.dump(db, dbfile)
 
     reply_str = ''
@@ -71,8 +71,8 @@ else:
     sys.exit("Telegram Bot API key not in TELEGRAM_BOT_API_KEY environment variable")
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-adny_filter = adnyFilter()
-total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & adny_filter)
+custom_filter = IncDecFilter()
+total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_filter)
 updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
