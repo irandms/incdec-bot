@@ -39,8 +39,6 @@ def score(bot, update):
 def update_score(bot, update):
     mentioned_users = set()
     for mention in update.message.entities:
-        if mention.type != 'mention':
-            continue
         mention_begin = mention.offset
         mention_end = mention_begin + mention.length
 
@@ -75,6 +73,7 @@ custom_filter = IncDecFilter()
 total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_filter)
 updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
+updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 
 dbstr = open('incdec-bot-db.json', 'r').read()
