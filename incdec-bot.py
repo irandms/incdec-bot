@@ -77,7 +77,7 @@ updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 
-dbstr = open('adny-bot-db.json', 'r').read()
+dbstr = open('incdec-bot-db.json', 'r').read()
 db_raw = json.loads(dbstr)
 db = defaultdict(int, db_raw)
 
