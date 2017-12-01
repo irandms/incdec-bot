@@ -9,7 +9,7 @@ import json
 
 class IncDecFilter(BaseFilter):
     def filter(self, message):
-        return ('--' in message.text or '++' in message.text)
+        return ('--' in message.text or '—' in message.text or '++' in message.text)
 
 def start(bot, update):
     update.message.reply_text('Hello World!')
@@ -48,7 +48,7 @@ def update_score(bot, update):
         action = action.strip()
         action = action[:2]
 
-        if '--' in action:
+        if '--' in action or '—' in action:
             db[username] -= 1
             mentioned_users.add(username)
         elif '++' in action:
