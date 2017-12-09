@@ -63,6 +63,10 @@ def update_score(bot, update):
 
         username = update.message.text[mention_begin+1:mention_end]
 
+        # Prevent users from modifying their own score
+        if username == update.message.from_user.username:
+            continue
+
         # Extract the action from the message
         action = update.message.text[mention_end:].strip()[:2]
 
