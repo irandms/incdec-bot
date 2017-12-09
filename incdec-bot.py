@@ -1,6 +1,8 @@
 from telegram import MessageEntity
+from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, BaseFilter
 from collections import defaultdict
+from rotate_word import rotate_word
 
 import os
 import sys
@@ -13,6 +15,12 @@ class IncDecFilter(BaseFilter):
 
 def start(bot, update):
     update.message.reply_text('Hello World!')
+
+def rotate(bot, update):
+    reply_string = "```\n"
+    reply_string += rotate_word(update.message.text.replace("/rotate ", ""))
+    reply_string += "```"
+    update.message.reply_text(reply_string, parse_mode=ParseMode.MARKDOWN)
 
 def myscore(bot, update):
     username = update.message.from_user.username
@@ -71,8 +79,10 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(leve
 
 custom_filter = IncDecFilter()
 total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_filter)
+
 updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
+updater.dispatcher.add_handler(CommandHandler('rotate', rotate))
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 
