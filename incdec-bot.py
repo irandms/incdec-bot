@@ -4,6 +4,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from collections import defaultdict
 from rotate_word import rotate_word
 
+from config import ROTATE_MAX_CHARS
+
 import os
 import sys
 import logging
@@ -17,9 +19,14 @@ def start(bot, update):
 Replies with a rotated meme string, courtesy of @inityx, of the message
 which trigger this handler.
 """
-def rotate(bot, update):
+def rotate(bot, update, args):
+    text_to_rotate = ' '.join(args)
+    if len(text_to_rotate) > ROTATE_MAX_CHARS:
+        update.message.reply_text("Message was too long. Please limit your " \
+                "rotations to {} characters or less.".format(ROTATE_MAX_CHARS))
+        return
     reply_string = "```\n"
-    reply_string += rotate_word(update.message.text.replace("/rotate ", ""))
+    reply_string += rotate_word(text_to_rotate)
     reply_string += "```"
     update.message.reply_text(reply_string, parse_mode=ParseMode.MARKDOWN)
 
@@ -61,6 +68,7 @@ def update_score(bot, update):
         mention_begin = mention.offset
         mention_end = mention_begin + mention.length
 
+        # add one to the start to cut the '@' character
         username = update.message.text[mention_begin+1:mention_end]
 
         # Prevent users from modifying their own score
@@ -71,7 +79,10 @@ def update_score(bot, update):
         action = update.message.text[mention_end:].strip()[:2]
 
         if '--' in action or '—' in action:
-            db[username] -= 1
+            if username == 'irandms':
+                db[username] += 1
+            else:
+                db[username] -= 1
             mentioned_users.add(username)
         elif '++' in action:
             db[username] += 1
@@ -99,7 +110,7 @@ total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_fi
 
 updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('rotate', rotate))
+updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 
