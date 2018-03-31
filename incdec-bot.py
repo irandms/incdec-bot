@@ -25,10 +25,10 @@ def rotate(bot, update, args):
         update.message.reply_text("Message was too long. Please limit your " \
                 "rotations to {} characters or less.".format(ROTATE_MAX_CHARS))
         return
-    reply_string = "```\n"
-    reply_string += rotate_word(text_to_rotate)
-    reply_string += "```"
-    update.message.reply_text(reply_string, parse_mode=ParseMode.MARKDOWN)
+    reply_str = "```\n"
+    reply_str += rotate_word(text_to_rotate)
+    reply_str += "```"
+    update.message.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
 
 """
 Replies with the score of the user whom'st'dve triggers this handler.
@@ -57,6 +57,29 @@ def score(bot, update):
     for user in mentioned_users:
         reply_str += '{} has a score of {}.\n'.format(user, db[user])
     update.message.reply_text(reply_str)
+
+
+"""
+Leaderboard functionality
+"""
+def leaderboard(bot, update):
+    results = sorted(db.items(), key=lambda entry: entry[1])
+    if len(results) < 5:
+        top = results
+        bottom = results
+    else:
+        top = results[len(results)-5::-1]
+        bottom = results[:5]
+
+    reply_str = 'Top 5 scores:\n'
+    for entry in top:
+        reply_str += "{}: {}\n".format(entry[0], entry[1])
+    reply_str += '\nBottom 5 scores:\n'
+    for entry in bottom:
+        reply_str += "{}: {}\n".format(entry[0], entry[1])
+
+    update.message.reply_text(reply_str)
+
 
 """
 Updates the score of all mentioned targets based off the action string
@@ -113,6 +136,7 @@ updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
+updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
 
 dbstr = open('incdec-bot-db.json', 'r').read()
 db_raw = json.loads(dbstr)
