@@ -68,7 +68,8 @@ def leaderboard(bot, update):
         top = results
         bottom = results
     else:
-        top = results[len(results)-5::-1]
+        top = results[len(results)-5:]
+        top = top[::-1]
         bottom = results[:5]
 
     reply_str = 'Top 5 scores:\n'
