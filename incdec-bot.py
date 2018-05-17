@@ -3,6 +3,7 @@ from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from collections import defaultdict
 from rotate_word import rotate_word
+from mention_subgroup import mention_subgroup
 
 from config import ROTATE_MAX_CHARS
 
@@ -29,6 +30,14 @@ def rotate(bot, update, args):
     reply_str += rotate_word(text_to_rotate)
     reply_str += "```"
     update.message.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
+    
+"""
+Replies with a message mentioning all people in a related subgroup.
+"""
+def mention(bot, update, args):
+    sender = update.message.from_user.username
+    reply_str = mention_subgroup(args.split(' '), sender)
+    update.messgage.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
 
 """
 Replies with the score of the user whom'st'dve triggers this handler.
@@ -138,6 +147,7 @@ updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
+updater.dispatcher.add_handler(CommandHandler('mention', mention))
 
 dbstr = open('incdec-bot-db.json', 'r').read()
 db_raw = json.loads(dbstr)
