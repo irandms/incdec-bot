@@ -5,7 +5,7 @@ from collections import defaultdict
 from rotate_word import rotate_word
 from mention_subgroup import mention_subgroup
 
-from config import ROTATE_MAX_CHARS
+from config import ROTATE_MAX_CHARS, SUBGROUPS
 
 import os
 import sys
@@ -36,7 +36,7 @@ Replies with a message mentioning all people in a related subgroup.
 """
 def mention(bot, update, args):
     sender = update.message.from_user.username
-    reply_str = mention_subgroup(args.split(' '), sender)
+    reply_str = mention_subgroup(args.split(' '), sender, SUBGROUPS)
     update.messgage.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
 
 """
