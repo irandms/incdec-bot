@@ -3,15 +3,12 @@
 import sys
 
 
-def mention_subgroup(groups, sender, groups_list):
+def mention_subgroup(groups, sender, group_list):
     mentions = ''
 
     for group in groups:
-        if group[:2].upper() not in groups_list.keys():
-            continue
-
-        else:
-            for user in groups_list[group[:2].upper()]:
+        if group[:2].upper() in group_list.keys():
+            for user in group_list[group[:2].upper()]:
                 if user not in mentions and user != sender:
                     mentions += '@' + user + ' '
 
