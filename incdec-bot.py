@@ -144,10 +144,10 @@ total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_fi
 updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
+updater.dispatcher.add_handler(CommandHandler('mention', mention, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
-updater.dispatcher.add_handler(CommandHandler('mention', mention))
 
 dbstr = open('incdec-bot-db.json', 'r').read()
 db_raw = json.loads(dbstr)
