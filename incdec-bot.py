@@ -3,8 +3,9 @@ from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from collections import defaultdict
 from rotate_word import rotate_word
+from mention_subgroup import mention_subgroup
 
-from config import ROTATE_MAX_CHARS
+from config import ROTATE_MAX_CHARS, SUBGROUPS
 
 import os
 import sys
@@ -28,6 +29,14 @@ def rotate(bot, update, args):
     reply_str = "```\n"
     reply_str += rotate_word(text_to_rotate)
     reply_str += "```"
+    update.message.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
+    
+"""
+Replies with a message mentioning all people in a related subgroup.
+"""
+def mention(bot, update, args):
+    sender = update.message.from_user.username
+    reply_str = mention_subgroup(args, sender, SUBGROUPS)
     update.message.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
 
 """
@@ -135,6 +144,7 @@ total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_fi
 updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
+updater.dispatcher.add_handler(CommandHandler('mention', mention, pass_args=True))
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
