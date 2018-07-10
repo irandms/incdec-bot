@@ -36,8 +36,8 @@ Replies with a message mentioning all people in a related subgroup.
 """
 def mention(bot, update, args):
     sender = update.message.from_user.username
-    reply_str = mention_subgroup(args.split(' '), sender, SUBGROUPS)
-    update.messgage.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
+    reply_str = mention_subgroup(args, sender, SUBGROUPS)
+    update.message.reply_text(reply_str, parse_mode=ParseMode.MARKDOWN)
 
 """
 Replies with the score of the user whom'st'dve triggers this handler.

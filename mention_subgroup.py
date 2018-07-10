@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-
 import sys
-
 
 def mention_subgroup(groups, sender, group_list):
     mentions = ''
@@ -13,4 +11,3 @@ def mention_subgroup(groups, sender, group_list):
                     mentions += '@' + user + ' '
 
     return mentions
-    
