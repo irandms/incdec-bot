@@ -129,6 +129,15 @@ def update_score(bot, update):
         reply_str += '{} now has a score of {}.\n'.format(user, db[user])
     update.message.reply_text(reply_str)
 
+"""
+Respond with a link to the provided subreddit
+"""
+def subreddit(bot, update, args):
+    if len(args) == 0:
+        update.message.reply_text("You forgot the subreddit, idiot")
+        return
+    
+    update.message.reply_text("https://old.reddit.com/r/{}".format(args[0]))
 
 # MAIN PROGRAM
 if "TELEGRAM_BOT_API_KEY" in os.environ:
@@ -148,6 +157,7 @@ updater.dispatcher.add_handler(CommandHandler('mention', mention, pass_args=True
 updater.dispatcher.add_handler(CommandHandler('score', score))
 updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
 updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
+updater.dispatcher.add_handler(CommandHandler('r', subreddit, pass_args=True))
 
 dbstr = open('incdec-bot-db.json', 'r').read()
 db_raw = json.loads(dbstr)
