@@ -6,6 +6,7 @@ from rotate_word import rotate_word
 from mention_subgroup import mention_subgroup
 
 from config import ROTATE_MAX_CHARS, SUBGROUPS
+from secrets import TELEGRAM_BOT_API_KEY
 
 import os
 import sys
@@ -140,28 +141,25 @@ def subreddit(bot, update, args):
     update.message.reply_text("https://old.reddit.com/r/{}".format(args[0]))
 
 # MAIN PROGRAM
-if "TELEGRAM_BOT_API_KEY" in os.environ:
-    updater = Updater(os.environ.get("TELEGRAM_BOT_API_KEY"))
-else:
-    sys.exit("Telegram Bot API key not in TELEGRAM_BOT_API_KEY environment variable")
+if __name__ == '__main__':
+    updater = Updater(TELEGRAM_BOT_API_KEY)
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    custom_filter = IncDecFilter()
+    total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_filter)
 
-custom_filter = IncDecFilter()
-total_filter = (Filters.text & Filters.entity(MessageEntity.MENTION) & custom_filter)
+    updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
+    updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
+    updater.dispatcher.add_handler(CommandHandler('mention', mention, pass_args=True))
+    updater.dispatcher.add_handler(CommandHandler('score', score))
+    updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
+    updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
+    updater.dispatcher.add_handler(CommandHandler('r', subreddit, pass_args=True))
 
-updater.dispatcher.add_handler(MessageHandler(total_filter, update_score))
-updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('rotate', rotate, pass_args=True))
-updater.dispatcher.add_handler(CommandHandler('mention', mention, pass_args=True))
-updater.dispatcher.add_handler(CommandHandler('score', score))
-updater.dispatcher.add_handler(CommandHandler('myscore', myscore))
-updater.dispatcher.add_handler(CommandHandler('leaderboard', leaderboard))
-updater.dispatcher.add_handler(CommandHandler('r', subreddit, pass_args=True))
+    dbstr = open('incdec-bot-db.json', 'r').read()
+    db_raw = json.loads(dbstr)
+    db = defaultdict(int, db_raw)
 
-dbstr = open('incdec-bot-db.json', 'r').read()
-db_raw = json.loads(dbstr)
-db = defaultdict(int, db_raw)
-
-updater.start_polling()
-updater.idle()
+    updater.start_polling()
+    updater.idle()
